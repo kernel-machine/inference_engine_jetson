@@ -4,15 +4,19 @@ from lib.frame_generator.frame_generator import VideoFileExtractor, CameraStream
 from lib.frame_cropper.VideoSegmenter import VideoSegmenter
 from lib.inference_module.inference_module import InferenceModule
 import cv2
-from flask import Flask, Response
+from flask import Flask, Response, make_response
 import threading
 
-# Uncomment for video file extraction
+# Use this to get videos from dataset
 ve = VideoFileExtractor("/dataset")
+
+# Or uncomment this to get frames from webcam
 #ve = CameraStreamExtractor(0)
+
 frames = ve.get_frames()
 inference_module = InferenceModule()
-predictions = queue.Queue()
+last_class_prediction = "Predicting..."
+prediction_lock = threading.Lock()
 
 vs = VideoSegmenter()
 app = Flask(__name__)
@@ -21,8 +25,8 @@ app = Flask(__name__)
 def generate_frames():
     global last_class_prediction
     inference_buffer = []
-    frame_rate = 1/15
-    last_run = 0
+    #frame_rate = 1/15
+    #last_run = 0
     try:
         while True:
             frame = next(frames)
@@ -33,29 +37,32 @@ def generate_frames():
                 inference_buffer.append(cropped)
                 if len(inference_buffer) == 32:
                     label = inference_module.inference(inference_buffer)
-                    predictions.put(label)
-                    print(f"Label: {label}")
+                    with prediction_lock:
+                        last_class_prediction = "Varroa" if label else "No Varroa"
+                        print(f"Updated Label: {last_class_prediction}")
                     inference_buffer.clear()
                 frame = cv2.rectangle(frame, top_left, bottom_right, (255,255,255), 20)
 
             _, img_buffer = cv2.imencode('.jpg', frame)
+            if not _:
+                continue
             frame = img_buffer.tobytes()
-            yield (b'--frame\r\n'
+            if frame:
+                yield (b'--frame\r\n'
                     b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
-            now = time.time()
-            elapsed = now - last_run
-            if elapsed < frame_rate:
-                time.sleep(frame_rate - elapsed)
-                last_run = time.time()
     except KeyboardInterrupt:
         print("Stream stopped by user")
 
 @app.route('/get_label')
 def get_label():
-    out = "#"
-    if not predictions.empty():
-        out = "Varroa" if  predictions.get() else "No Varroa"
-    return Response(out, mimetype='text/plain')
+    def critical_section():
+        with prediction_lock:
+            print(f"Accessing label: {last_class_prediction}")
+            return last_class_prediction
+    resp = make_response(critical_section())
+    resp.mimetype = "text/plain"
+    return resp
+
 
 @app.route('/video_feed')
 def video_feed():
@@ -69,10 +76,10 @@ def index():
     <script>
         async function updateLabel() {
             const response = await fetch('/get_label');
-            const label = await response.text();
-            if (label != "#") {
-                document.getElementById('label').innerText = label;
-            }
+            response.text().then((text) => {
+                console.log(text);
+                document.getElementById('label').innerText = text;
+           });
         }
         setInterval(updateLabel, 1000);
     </script>
