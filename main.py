@@ -6,6 +6,7 @@ import cv2
 from flask import Flask, Response
 import queue
 
+# Uncomment for video file extraction
 #ve = VideoFileExtractor("/dataset")
 ve = CameraStreamExtractor(0)
 frames = ve.get_frames()
