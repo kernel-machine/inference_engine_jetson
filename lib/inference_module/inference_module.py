@@ -12,15 +12,14 @@ class InferenceModule:
         self.model = ModelVivit(hidden_layers=5)
         self.model = torch.nn.DataParallel(self.model)
 
-        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        dummy_input = torch.randn(1, 32 , 3, 224, 224).to(device)
-        self.model.load_state_dict(torch.load("model.pth", weights_only=True, map_location=device))
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        dummy_input = torch.randn(1, 32 , 3, 224, 224).to(self.device)
+        self.model.load_state_dict(torch.load("model.pth", weights_only=True, map_location=self.device))
         self.model = self.model.module.eval()
         if compile:
             print("Compiling...")
             self.model = torch.compile(self.model)
         self.model(dummy_input)
-
 
     def pre_process_images(self, batch_data):
         processed_tensors = []
@@ -35,7 +34,7 @@ class InferenceModule:
         return processed_tensors
 
     def inference(self, frames:list[cv2.Mat]) -> bool:
-        frames = self.pre_process_images(frames)
+        frames = self.pre_process_images(frames).to(self.device)
         with torch.no_grad():
             torch.cuda.synchronize()
             start_time = time.time()

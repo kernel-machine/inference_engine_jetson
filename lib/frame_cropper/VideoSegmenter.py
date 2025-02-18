@@ -21,7 +21,7 @@ class VideoSegmenter:
             self.vwriter = cv2.VideoWriter(video_name, fourcc, 20, (2*output_size, output_size*4))
             self.vwriter.set(cv2.VIDEOWRITER_PROP_QUALITY, 100)
 
-    def crop_frame(self, frame:cv2.Mat) -> cv2.Mat:
+    def crop_frame(self, frame:cv2.Mat) -> tuple[int,int]:
         # Get Saturation and Value mask
         (frame_h,frame_w) = frame.shape[:2]
         frame_blur = cv2.GaussianBlur(frame, (7,7), 10)
@@ -50,7 +50,6 @@ class VideoSegmenter:
             mask = cv2.bitwise_and(mask, motion_mask)
             contours, _ = cv2.findContours(mask, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
             if len(contours) > 0:
-                print(f"Found {len(contours)} contours")
                 contours = list(filter(lambda x:cv2.boundingRect(x)[2]>30, contours)) #Remove small holes
                 if len(contours) > 0:
                     areas = list(map(lambda x:cv2.contourArea(x), contours))
@@ -71,12 +70,13 @@ class VideoSegmenter:
                         x2, y2 = bottom_right
                         # x1, y1 = max(x1, 0), max(y1, 0)
                         # x2, y2 = min(x2, frame_w), min(y2, frame_h)
-                        cropped_frame = frame[y1:y2, x1:x2].copy()
-                        frame = cv2.circle(frame, center, 5, (0,0,255), 2)
-                        frame = cv2.rectangle(frame, top_left, bottom_right, (0,0,255), 20)
-                        frame = cv2.putText(frame, f"Area: {areas[max_index]}", bottom_right, cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 2)
-                        return frame, cropped_frame
-        return frame, None
+                        return top_left,bottom_right
+                        # cropped_frame = frame[y1:y2, x1:x2].copy()
+                        # frame = cv2.circle(frame, center, 5, (0,0,255), 2)
+                        # frame = cv2.rectangle(frame, top_left, bottom_right, (0,0,255), 20)
+                        # frame = cv2.putText(frame, f"Area: {areas[max_index]}", bottom_right, cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 2)
+                        # return frame, cropped_frame
+        return 0, 0
         '''
         if self.show_debug and self.vwriter is not None:
             mask_saturation = cv2.cvtColor(mask_saturation, cv2.COLOR_GRAY2BGR)
