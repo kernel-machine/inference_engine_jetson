@@ -1,15 +1,14 @@
 {
-  "name": "varroa_inference",
+  "name": "varroa_inference_frontend",
   "build": {
     "dockerfile": "./Dockerfile",
     "context": "."
   },
-  "shutdownAction": "none",
+  //"shutdownAction": "none",
+  //"workspaceFolder": "/workspaces/monolitic_inference/backend",
   "runArgs": [
     "--name",
-    "varroa_inference",
-    "--device","nvidia.com/gpu=0",
-    "--device","/dev/video0",
+    "varroa_inference_frontend_dev",
     "--ipc",
     "host"
   ],
@@ -32,19 +31,5 @@
         "ms-azuretools.vscode-docker"
       ]
     }
-  },
-  "mounts": [
-    {
-      "source": "/media/luca/Home/datasets/prin/raw/dataset_v2_raw_s32_val",
-      "target": "/dataset",
-      "type": "bind"
-    }
-    // {
-    //   "source": "/run/media/lucagiovannesi/SSD/PRIN",
-    //   "target": "/home/nonroot/ssd",
-    //   "type": "bind"
-    // }
-  ]
-  //"containerUser": "vscode"
-  //"forwardPorts": [3000]
+  }
 }

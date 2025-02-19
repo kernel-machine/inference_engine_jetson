@@ -4,7 +4,8 @@ from lib.frame_generator.frame_generator import VideoFileExtractor, CameraStream
 from lib.frame_cropper.VideoSegmenter import VideoSegmenter
 from lib.inference_module.inference_module import InferenceModule
 import cv2
-from flask import Flask, Response, make_response
+from flask import Flask, Response, make_response, send_from_directory
+from flask_cors import CORS
 import threading
 
 # Use this to get videos from dataset
@@ -19,7 +20,8 @@ last_class_prediction = "Predicting..."
 prediction_lock = threading.Lock()
 
 vs = VideoSegmenter()
-app = Flask(__name__)
+app = Flask(__name__, static_folder="dist")
+CORS(app)
 
 
 def generate_frames():
@@ -72,22 +74,13 @@ def get_label():
 def video_feed():
     return Response(generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
+@app.route("/<path:filename>")
+def serve_static(filename):
+    return send_from_directory("dist", filename)
+
 @app.route('/')
 def index():
-    return """
-    <h1>Webcam Streaming</h1><img src='/video_feed' width='840' height='480'/>
-        <p>Ultimo rilevamento: <span id="label">No label</span></p>
-    <script>
-        async function updateLabel() {
-            const response = await fetch('/get_label');
-            response.text().then((text) => {
-                console.log(text);
-                document.getElementById('label').innerText = text;
-           });
-        }
-        setInterval(updateLabel, 1000);
-    </script>
-    """
+    return send_from_directory("dist", "index.html")
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=5000, debug=True)

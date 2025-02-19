@@ -1,0 +1,52 @@
+{
+  "name": "varroa_inference",
+  "build": {
+    "dockerfile": "./Dockerfile",
+    "context": "."
+  },
+  //"shutdownAction": "none",
+  //"workspaceFolder": "/workspaces/monolitic_inference/backend",
+  "runArgs": [
+    "--name",
+    "varroa_inference",
+    "--device","nvidia.com/gpu=0",
+    "--device","/dev/video0",
+    "--ipc",
+    "host",
+    "-p","5000:5000"
+  ],
+  "postCreateCommand": [],
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "python.testing.pytestArgs": [
+          "."
+        ],
+        "python.testing.unittestEnabled": false,
+        "python.testing.pytestEnabled": true,
+        "python.formatting.provider": "black",
+        "python.linting.enabled": true,
+        "terminal.integrated.defaultProfile.linux": "bash"
+      },
+      "extensions": [
+        "ms-toolsai.tensorboard",
+        "ms-python.python",
+        "ms-azuretools.vscode-docker"
+      ]
+    }
+  },
+  "mounts": [
+    {
+      "source": "/media/luca/Home/datasets/prin/raw/dataset_v2_raw_s32_val",
+      "target": "/dataset",
+      "type": "bind"
+    }
+    // {
+    //   "source": "/run/media/lucagiovannesi/SSD/PRIN",
+    //   "target": "/home/nonroot/ssd",
+    //   "type": "bind"
+    // }
+  ]
+  //"containerUser": "vscode"
+  //"forwardPorts": [3000]
+}
