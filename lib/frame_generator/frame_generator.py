@@ -22,7 +22,7 @@ class VideoFileExtractor(VideoExtractor):
     
     def get_frames(self) -> Generator[cv2.Mat,None,None]:
         while True:
-            video_paths = glob.glob(os.path.join(self.video,"*","*.mkv"))
+            video_paths = glob.glob(os.path.join(self.video,"*","*.mp4"))
             for video in video_paths:
                 class_name = os.path.split(os.path.dirname(video))[1]
                 print(f"Processing {class_name} video")
@@ -36,10 +36,7 @@ class VideoFileExtractor(VideoExtractor):
                     if success:
                         height , width = frame.shape[:2]
                         frame = cv2.resize(frame, (int(width*0.25), int(height*0.25)))
-                        frame_buffer.append(frame)
-                for segment in frame_buffer.get_segments():
-                        for img in segment:
-                            yield img
+                        yield frame
 
 class CameraStreamExtractor(VideoExtractor):
     def __init__(self, camera_id:int):
