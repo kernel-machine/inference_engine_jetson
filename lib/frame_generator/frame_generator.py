@@ -22,7 +22,7 @@ class VideoFileExtractor(VideoExtractor):
     
     def get_frames(self) -> Generator[cv2.Mat,None,None]:
         while True:
-            video_paths = glob.glob(os.path.join(self.video,"*","*.mp4"))
+            video_paths = glob.glob(os.path.join(self.video,"*","*.mkv"))
             for video in video_paths:
                 class_name = os.path.split(os.path.dirname(video))[1]
                 print(f"Processing {class_name} video")

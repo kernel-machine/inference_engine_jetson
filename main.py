@@ -25,24 +25,27 @@ app = Flask(__name__)
 def generate_frames():
     global last_class_prediction
     inference_buffer = []
-    #frame_rate = 1/15
-    #last_run = 0
+    frame_rate = 1/15
+    last_run = 0
     try:
         while True:
             frame = next(frames)
+            
             top_left, bottom_right = vs.crop_frame(frame) #Returns rectangle vertices
             if top_left != 0 and bottom_right != 0:
                 cropped = frame[top_left[1]:bottom_right[1], top_left[0]:bottom_right[0]].copy()
-                cropped = cv2.resize(cropped, (224,224))
-                inference_buffer.append(cropped)
-                if len(inference_buffer) == 32:
-                    label = inference_module.inference(inference_buffer)
-                    with prediction_lock:
-                        last_class_prediction = "Varroa" if label else "No Varroa"
-                        print(f"Updated Label: {last_class_prediction}")
-                    inference_buffer.clear()
-                frame = cv2.rectangle(frame, top_left, bottom_right, (255,255,255), 20)
-
+                if cropped.shape[0] > 0 and cropped.shape[1] > 0:
+                    cropped = cv2.resize(cropped, (224,224))
+                    inference_buffer.append(cropped)
+                    if len(inference_buffer) == 32:
+                        label = inference_module.inference(inference_buffer)
+                        print(f"-----------------------------------> Label {label}")
+                        with prediction_lock:
+                            last_class_prediction = "Varroa" if label else "No Varroa"
+                            print(f"Updated Label: {last_class_prediction}")
+                        inference_buffer.clear()
+                    frame = cv2.rectangle(frame, top_left, bottom_right, (255,255,255), 20)
+            
             _, img_buffer = cv2.imencode('.jpg', frame)
             if not _:
                 continue
@@ -50,6 +53,7 @@ def generate_frames():
             if frame:
                 yield (b'--frame\r\n'
                     b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+                #time.sleep(frame_rate)
     except KeyboardInterrupt:
         print("Stream stopped by user")
 
