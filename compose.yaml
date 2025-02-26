@@ -1,0 +1,14 @@
+services:
+  varroa_inference:
+    build:
+      context: .
+      dockerfile: .devcontainer/inference/Dockerfile
+    runtime: nvidia
+    devices:
+      - "/dev/video0:/dev/video0"
+      - "nvidia.com/gpu=0"
+    ipc: host
+    ports:
+      - 5001:5000
+    volumes:
+      - /media/luca/Home/datasets/prin/raw/dataset_v2_raw_s32_val:/dataset

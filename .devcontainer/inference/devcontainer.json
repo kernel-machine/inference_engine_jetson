@@ -10,7 +10,7 @@
     "--name",
     "varroa_inference",
     "--device","nvidia.com/gpu=0",
-    "--device","/dev/video0",
+    "--device","/dev/video0:/dev/video0",
     "--ipc",
     "host",
     "-p","5000:5000"

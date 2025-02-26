@@ -8,7 +8,7 @@ from lib.inference_module.model_vivit import ModelVivit
 import time
 
 class InferenceModule:
-    def __init__(self, compile:bool=False) -> None:
+    def __init__(self, compile:bool=False, fake:bool=True) -> None:
         self.model = ModelVivit(hidden_layers=5)
         self.model = torch.nn.DataParallel(self.model)
 
@@ -20,6 +20,7 @@ class InferenceModule:
             print("Compiling...")
             self.model = torch.compile(self.model)
         self.model(dummy_input)
+        self.fake = fake
 
     def pre_process_images(self, batch_data):
         processed_tensors = []
@@ -42,8 +43,12 @@ class InferenceModule:
             torch.cuda.synchronize()
             end_time = time.time()
         inference_time = end_time - start_time
-        predicted_classes = torch.sigmoid(prediction_logits).round().flatten().cpu()
-        predicted_classes = list(map(lambda x:bool(x),predicted_classes))
-        print(f"prediction: {predicted_classes} | Time: {(inference_time*1000)}ms")
-        return predicted_classes[0]
+        if self.fake:
+            print(f"Logits {prediction_logits.flatten().cpu()}")
+            return prediction_logits.flatten().cpu()[0]>0.5
+        else:
+            predicted_classes = torch.sigmoid(prediction_logits).round().flatten().cpu()
+            predicted_classes = list(map(lambda x:bool(x),predicted_classes))
+            print(f"prediction: {prediction_logits} | {predicted_classes} | Time: {(inference_time*1000)}ms")
+            return predicted_classes[0]
             

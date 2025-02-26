@@ -1,6 +1,6 @@
 <template>
   <div id="mainDiv">
-    <img src="http://127.0.0.1:5000/video_feed" id="frameViewer"/>
+    <img :src="image_url" id="frameViewer"/>
     <div>
       <p class="ml-2">Ultimo rilevamento: {{ last_prediction }}</p>
     </div>
@@ -9,7 +9,8 @@
 
 <style scoped>
 #frameViewer {
-  flex:1;
+  width: 50vw;
+  object-fit: cover;
 }
 
 #mainDiv {
@@ -28,10 +29,12 @@ import axios from 'axios'
 
 const encoder = new TextEncoder("utf-8");
 const last_prediction = ref("Elaborazione...");
+const image_url = "http://"+window.location.host+"/video_feed"
 
 async function updateLabel() {
+    const url = "http://"+window.location.host+"/get_label"
     try {
-        const response = await axios.get('http://127.0.0.1:5000/get_label', {
+        const response = await axios.get('http://'+window.location.host+'/get_label', {
             headers: {
                 'Content-Type': 'application/json',
                 'Access-Control-Allow-Origin': '*'

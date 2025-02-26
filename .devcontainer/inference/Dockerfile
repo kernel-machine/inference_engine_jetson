@@ -1,11 +1,16 @@
 FROM docker.io/nvidia/cuda:12.2.2-cudnn8-devel-ubuntu22.04
-# FROM stablebaselines/stable-baselines
 
-RUN apt update
-RUN apt install -y libopenmpi-dev git
-# python3.11 python3.11-venv
-# RUN apt install -y  libcufft10 libcublas11 libcudnn8
+RUN apt update && apt install -y libopenmpi-dev git htop nvtop btop python3.11 python3.11-venv libgl1 libglib2.0-0 sudo v4l-utils
 
-RUN apt install -y task-spooler htop nvtop btop python3.11 python3.11-venv libgl1 libglib2.0-0 sudo npm
+WORKDIR /workspace
+COPY backend /workspace
+COPY frontend/dist /workspace/dist
 
+RUN python3.11 -m venv env
+RUN env/bin/pip install -r requirements.txt
+
+EXPOSE 5000
+
+#CMD [ "env/bin/python","main.py" ]
+CMD ["bash"]
 
