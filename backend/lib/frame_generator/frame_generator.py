@@ -1,7 +1,6 @@
 import argparse
 import glob
 import os
-import zmq
 import cv2
 from lib.frame_generator.frame_buffer import FrameBuffer
 import struct
@@ -22,11 +21,11 @@ class VideoFileExtractor(VideoExtractor):
     
     def get_frames(self) -> Generator[cv2.Mat,None,None]:
         while True:
-            video_paths = glob.glob(os.path.join(self.video,"*","*.mkv"))
+            video_paths = glob.glob(os.path.join(self.video,"*","*.mkv"))[5:]
+            #random.shuffle(video_paths)
             for video in video_paths:
                 class_name = os.path.split(os.path.dirname(video))[1]
                 print(f"Processing {class_name} video")
-                frame_buffer = FrameBuffer(self.window_size)
 
                 video = cv2.VideoCapture(video)
                 success = True

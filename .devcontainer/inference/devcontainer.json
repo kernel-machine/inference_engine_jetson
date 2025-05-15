@@ -1,15 +1,16 @@
-{
+  {
   "name": "varroa_inference",
   "build": {
     "dockerfile": "./Dockerfile",
     "context": "."
   },
-  //"shutdownAction": "none",
+  //"remoteUser": "ubuntu",
+  "shutdownAction": "none",
   //"workspaceFolder": "/workspaces/monolitic_inference/backend",
   "runArgs": [
     "--name",
     "varroa_inference",
-    "--device","nvidia.com/gpu=0",
+    "--gpus=all",
     "--device","/dev/video0:/dev/video0",
     "--ipc",
     "host",
@@ -37,7 +38,7 @@
   },
   "mounts": [
     {
-      "source": "/media/luca/Home/datasets/prin/raw/dataset_v2_raw_s32_val",
+      "source": "/ssd/dataset/dataset_v2_raw_s32_val",
       "target": "/dataset",
       "type": "bind"
     }

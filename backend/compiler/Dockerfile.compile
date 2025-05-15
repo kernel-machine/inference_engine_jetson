@@ -1,0 +1,14 @@
+FROM nvcr.io/nvidia/pytorch:24.12-py3-igpu
+
+RUN python -m pip install --upgrade pip
+RUN pip install -U transformers
+#RUN pip install "nvidia-modelopt[all]" --extra-index-url https://pypi.nvidia.com
+
+WORKDIR /workspace
+COPY compiler/model_download.py /workspace
+COPY compiler/model_compile.py /workspace
+COPY lib /workspace/lib
+COPY model.pth /workspace/
+RUN mkdir /exported_models && chown ubuntu:ubuntu /exported_models && chmod 777 /exported_models
+USER ubuntu
+CMD [ "bash" ]

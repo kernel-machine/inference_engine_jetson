@@ -1,4 +1,6 @@
-model.pth
+model*.pth
 env
+env_local
 **/__pycache__/
 frontend/node_modules
+
