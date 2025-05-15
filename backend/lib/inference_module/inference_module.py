@@ -3,7 +3,6 @@ import cv2
 import struct
 import torch
 import torchvision
-from lib.inference_module.model_vivit import ModelVivit
 import time
 import torch_tensorrt
 

@@ -53,18 +53,20 @@ RUN cd ~/opencv/build && \
     make clean
     
 RUN apt update
+# RUN apt install -y software-properties-common
+# RUN add-apt-repository -y ppa:deadsnakes/ppa
+# RUN apt install -y python3.11 python3.11-venv
 
-# WORKDIR /workspace
-# COPY backend /workspace
-# COPY frontend/dist /workspace/dist
+WORKDIR /workspace
+COPY backend /workspace
+COPY frontend/dist /workspace/dist
 
-# RUN python3.11 -m venv env
+# RUN python3 -m venv env
 # RUN env/bin/pip install -r requirements.txt
 
-# EXPOSE 5000
-
-# #CMD [ "env/bin/python","main.py" ]
-CMD ["bash"]
+EXPOSE 5000
+#CMD ["sleep","infinity"]
+CMD [ "python","main.py" ]
 
 
 

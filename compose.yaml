@@ -3,7 +3,7 @@ services:
     build:
       context: .
       dockerfile: .devcontainer/inference/Dockerfile
-      network: host
+    network_mode: host
     deploy:
       resources:
         reservations:
@@ -15,4 +15,4 @@ services:
       - "/dev/video0:/dev/video0"
     ipc: host
     volumes:
-      - /media/luca/Home/datasets/prin/raw/dataset_v2_raw_s32_val:/dataset
+      - /ssd/dataset/dataset_v2_raw_s32_val:/dataset
