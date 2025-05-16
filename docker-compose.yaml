@@ -1,0 +1,17 @@
+version: '2.1'
+
+services:
+  varroa_inference:
+    build:
+      context: .
+      dockerfile: .devcontainer/inference/Dockerfile
+    privileged: true
+    ipc: host
+    ports:
+      - "80:5000"
+    labels:
+      io.balena.features.kernel-modules: '1'
+      io.balena.features.dbus: '1'
+
+    # volumes:
+    #   - /ssd/dataset/dataset_v2_raw_s32_val:/dataset

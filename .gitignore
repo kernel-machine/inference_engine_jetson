@@ -3,4 +3,5 @@ env
 env_local
 **/__pycache__/
 frontend/node_modules
+*.ep
 

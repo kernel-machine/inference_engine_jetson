@@ -13,7 +13,7 @@ from statistics import mean
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--dataset", action="store_true", default=False)
-parser.add_argument("--model", type=str, default="compiler/exported_models/trt_std.ep")
+parser.add_argument("--model", type=str, default="trt_std.ep")
 args = parser.parse_args()
 # Use this to get videos from dataset
 if args.dataset:
@@ -81,7 +81,6 @@ def generate_frames():
                     # Update spatial information
                     last_position = top_left[1]
 
-                    print("CROPPED SHAPE", cropped.shape)
                     cropped = cv2.resize(cropped, (224,224))
                     inference_buffer.append(cropped)
 

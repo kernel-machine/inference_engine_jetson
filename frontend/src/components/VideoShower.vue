@@ -29,12 +29,12 @@ import axios from 'axios'
 
 const encoder = new TextEncoder("utf-8");
 const last_prediction = ref("Elaborazione...");
-const image_url = "http://"+window.location.host+"/video_feed"
+const image_url = window.location.protocol+"//"+window.location.host+"/video_feed"
 
 async function updateLabel() {
-    const url = "http://"+window.location.host+"/get_label"
+    const url = window.location.protocol+"//"+window.location.host+"/get_label"
     try {
-        const response = await axios.get('http://'+window.location.host+'/get_label', {
+        const response = await axios.get(url  , {
             headers: {
                 'Content-Type': 'application/json',
                 'Access-Control-Allow-Origin': '*'
