@@ -3,7 +3,7 @@ Software to run inference on a Nvidia Jetson Orin nano with Balena
 
 The Varroa destructor mite threatens honey bee populations. We introduce a deep learning framework that analyzes video clips of bees for accurate, 98% detection of infestations. Our method outperforms existing techniques, offering a scalable, non-invasive solution for early detection, reducing chemical use, and supporting sustainable beekeeping.
 
-[![balena deploy button](https://www.balena.io/deploy.svg)](https://dashboard.balena-cloud.com/deploy?repoUrl=https://github.com/kernel-machine/inference_engine_jetson.git)
+[![balena deploy button](https://www.balena.io/deploy.svg)](https://dashboard.balena-cloud.com/deploy?repoUrl=https://github.com/kernel-machine/inference_engine_jetson)
 
 ## How to run
 ### Download the code
